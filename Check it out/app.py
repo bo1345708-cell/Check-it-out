@@ -1,12 +1,10 @@
 import os
 import time
-import json
 import re
 import cloudscraper
 import requests
 import telebot
 from flask import Flask
-from apscheduler.schedulers.background import BackgroundScheduler
 
 BOT_TOKEN = "8875910546:AAF2rtY20mMs4LUplnlPV8TvSYBflavis_I"
 CHAT_ID = "-1004466488929"
@@ -56,24 +54,12 @@ def check_new_movie():
     except Exception as e:
         print(f"❌ Error ဖြစ်နေပါသည်: {e}", flush=True)
 
-def ping_self():
-    try:
-        url = os.environ.get('RENDER_EXTERNAL_URL', 'http://localhost:10000')
-        requests.get(url)
-    except:
-        pass
-
 @app.route('/')
-def keep_alive():
-    return "Movie Monitor Bot is Running!"
+def home():
+    # Website ကို တစ်စုံတစ်ယောက် (သို့မဟုတ် Render က) ဝင်လာတိုင်း ရုပ်ရှင်အသစ် စစ်ဆေးပေးပါမည်
+    check_new_movie()
+    return "Movie Monitor Bot is Active and Checked!"
 
 if __name__ == "__main__":
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(func=check_new_movie, trigger="interval", minutes=10)
-    scheduler.add_job(func=ping_self, trigger="interval", minutes=5)
-    scheduler.start()
-    
-    check_new_movie()
-    
     port = int(os.environ.get('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
